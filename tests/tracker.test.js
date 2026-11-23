@@ -89,3 +89,17 @@ test('comptes, invitations, isolation, feedback, limites et abonnement', async t
   assert.equal((await request('/api/logout', {cookie:client.cookie, body:{}})).status, 200);
   assert.equal((await request('/api/assignments', {cookie:client.cookie})).status, 401);
 });
+
+test('limitation par adresse derrière le proxy uniquement lorsqu’il est approuvé', async t => {
+  for (const trustCaddy of [false, true]) {
+    const server = createApp({database:':memory:', appUrl:'http://localhost:3000', trustCaddy});
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    t.after(() => new Promise(resolve => server.close(resolve)));
+    const url = `http://127.0.0.1:${server.address().port}/api/login`;
+    const request = ip => fetch(url, {method:'POST', headers:{origin:'http://localhost:3000', 'content-type':'application/json', 'x-tracker-client-ip':ip}, body:'{}'});
+    for (let i = 0; i < 20; i++) assert.equal((await request('192.0.2.1')).status, 400);
+    assert.equal((await request('192.0.2.1')).status, 429);
+    assert.equal((await request('192.0.2.2')).status, trustCaddy ? 400 : 429);
+  }
+});

@@ -2,8 +2,9 @@ import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { closeSync, fchmodSync, openSync } from 'node:fs';
+import { closeSync, fchmodSync, openSync, realpathSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
+import { isIP } from 'node:net';
 import { fileURLToPath } from 'node:url';
 import { importSession } from './core.js';
 import { exerciseById } from './exercises.js';
@@ -67,7 +68,7 @@ function stripeSignature(raw, header, secret) {
   });
 }
 
-export function createApp({ database = 'tracker.sqlite', appUrl = 'http://localhost:3000', stripeKey = '', stripePrice = '', stripeWebhookSecret = '', stripeFetch = fetch } = {}) {
+export function createApp({ database = 'tracker.sqlite', appUrl = 'http://localhost:3000', stripeKey = '', stripePrice = '', stripeWebhookSecret = '', stripeFetch = fetch, trustCaddy = false } = {}) {
   const origin = new URL(appUrl);
   if (!['http:', 'https:'].includes(origin.protocol) || origin.pathname !== '/' || origin.search || origin.hash ||
       (origin.protocol !== 'https:' && !['localhost', '127.0.0.1', '::1'].includes(origin.hostname))) {
@@ -139,7 +140,9 @@ export function createApp({ database = 'tracker.sqlite', appUrl = 'http://localh
     return user;
   }
   function rateLimit(req) {
-    const key = req.socket.remoteAddress || 'unknown';
+    const remote = req.socket.remoteAddress || 'unknown';
+    const forwarded = req.headers['x-tracker-client-ip'];
+    const key = trustCaddy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remote) && typeof forwarded === 'string' && isIP(forwarded) ? forwarded : remote;
     const cutoff = Date.now() - 15 * 60 * 1000;
     const previous = (attempts.get(key) || []).filter(t => t > cutoff);
     if (previous.length >= 20) fail(429, 'Trop de tentatives. Réessayez plus tard.');
@@ -365,10 +368,13 @@ export function createApp({ database = 'tracker.sqlite', appUrl = 'http://localh
   return server;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.argv[1])) {
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
+  const host = process.env.HOST || '127.0.0.1';
+  const trustCaddy = process.env.TRUST_CADDY === '1';
+  if (trustCaddy && !['127.0.0.1', '::1'].includes(host)) throw new Error('TRUST_CADDY exige une écoute sur localhost.');
   const server = createApp({database:process.env.DATABASE_PATH || 'tracker.sqlite', appUrl,
-    stripeKey:process.env.STRIPE_SECRET_KEY, stripePrice:process.env.STRIPE_PRICE_ID, stripeWebhookSecret:process.env.STRIPE_WEBHOOK_SECRET});
+    stripeKey:process.env.STRIPE_SECRET_KEY, stripePrice:process.env.STRIPE_PRICE_ID, stripeWebhookSecret:process.env.STRIPE_WEBHOOK_SECRET, trustCaddy});
   const port = Number(process.env.PORT || 3000);
-  server.listen(port, process.env.HOST || '127.0.0.1', () => console.log(`Fitness Tracker écoute sur ${appUrl}`));
+  server.listen(port, host, () => console.log(`Fitness Tracker écoute sur ${appUrl}`));
 }

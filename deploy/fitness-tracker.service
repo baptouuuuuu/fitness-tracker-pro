@@ -1,0 +1,18 @@
+[Unit]
+Description=Fitness Tracker
+After=network.target
+
+[Service]
+Type=simple
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=%h/.config/fitness-tracker.env
+WorkingDirectory=%h/fitness-tracker/current
+ExecStart=/usr/bin/env node %h/fitness-tracker/current/server.js
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

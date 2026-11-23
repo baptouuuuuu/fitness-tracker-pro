@@ -32,6 +32,7 @@ Variables disponibles :
 | `APP_URL` | Origine publique exacte, HTTPS obligatoire hors localhost ; défaut `http://localhost:3000` |
 | `HOST`, `PORT` | Adresse et port d'écoute ; défaut `127.0.0.1:3000` |
 | `DATABASE_PATH` | Chemin du fichier SQLite ; défaut `tracker.sqlite` |
+| `TRUST_CADDY` | `1` uniquement avec le proxy Caddy documenté, qui remplace l'en-tête d'adresse client ; nécessite `HOST=127.0.0.1` |
 | `STRIPE_SECRET_KEY` | Clé secrète Stripe, jamais exposée au navigateur |
 | `STRIPE_PRICE_ID` | Identifiant du tarif Stripe récurrent |
 | `STRIPE_WEBHOOK_SECRET` | Secret de signature du webhook Stripe |
@@ -42,9 +43,11 @@ Créez un produit et un tarif récurrent dans Stripe, configurez les trois varia
 
 ## Limites avant utilisation réelle
 
-Ce projet est un prototype fonctionnel, **pas une plateforme validée pour des données de santé réelles**. Avant toute mise en service, il faut notamment un hébergement et des sauvegardes adaptés et chiffrés, une analyse de sécurité indépendante, une gestion de la récupération et suppression des comptes, et une analyse RGPD/HDS applicable au contexte. SQLite n'est pas chiffré par l'application ; la sauvegarde, le contrôle d'accès au fichier et la gestion du cycle de vie des données relèvent de l'hébergement. Le prototype doit être exécuté en un seul processus : la limitation des tentatives de connexion est en mémoire et par adresse de connexion, sans prise en charge des adresses transmises par un proxy. Les séances locales sont accessibles aux personnes ayant accès au profil du navigateur.
+Ce projet est un prototype fonctionnel, **pas une plateforme validée pour des données de santé réelles**. Avant toute mise en service, il faut notamment un hébergement et des sauvegardes adaptés et chiffrés, une analyse de sécurité indépendante, une gestion de la récupération et suppression des comptes, et une analyse RGPD/HDS applicable au contexte. SQLite n'est pas chiffré par l'application ; la sauvegarde, le contrôle d'accès au fichier et la gestion du cycle de vie des données relèvent de l'hébergement. Le prototype doit être exécuté en un seul processus : la limitation des tentatives de connexion est en mémoire. Sans la configuration Caddy décrite ci-dessous, toutes les connexions passant par un proxy local partagent la même limite. Les séances locales sont accessibles aux personnes ayant accès au profil du navigateur.
 
 Le site ne peut plus être publié comme site statique GitHub Pages : les comptes, autorisations, feedbacks et webhooks nécessitent le serveur Node et une base persistante. L'ancien workflow de publication Pages a été supprimé.
+
+Pour un hébergement gratuit de **test**, voir [déploiement Oracle Cloud et GitHub Actions](deploy/README.md).
 
 ## Données et images
 

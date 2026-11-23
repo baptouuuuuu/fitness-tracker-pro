@@ -2,6 +2,7 @@ name: Tests
 on:
   push:
   pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -13,3 +14,43 @@ jobs:
         with:
           node-version: 22
       - run: npm test
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    concurrency:
+      group: fitness-tracker-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure SSH
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          [[ "$DEPLOY_HOST" =~ ^[a-zA-Z0-9.-]+$ ]] || { echo "DEPLOY_HOST invalide ou absent" >&2; exit 1; }
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*$ ]] || { echo "DEPLOY_USER invalide ou absent" >&2; exit 1; }
+          [[ -n "$DEPLOY_SSH_KEY" && -n "$DEPLOY_KNOWN_HOSTS" ]] || { echo "Secrets SSH manquants" >&2; exit 1; }
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/fitness-tracker"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/fitness-tracker" "$HOME/.ssh/known_hosts"
+      - name: Deploy tested commit
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          release="${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          ssh_options=(-i "$HOME/.ssh/fitness-tracker" -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes)
+          target="${DEPLOY_USER}@${DEPLOY_HOST}"
+          stage="$RUNNER_TEMP/fitness-tracker-release"
+          mkdir -p "$stage"
+          git archive "$GITHUB_SHA" | tar -x -C "$stage"
+          ssh "${ssh_options[@]}" "$target" "mkdir -p \"\$HOME/fitness-tracker/releases/$release\""
+          rsync -az -e "ssh -i $HOME/.ssh/fitness-tracker -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes" "$stage/" "$target:fitness-tracker/releases/$release/"
+          ssh "${ssh_options[@]}" "$target" "bash \"\$HOME/fitness-tracker/releases/$release/deploy/activate.sh\" \"$release\""
