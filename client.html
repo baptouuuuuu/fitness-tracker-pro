@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mes séances — Fitness Tracker</title>
+  <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/tracker.css">
+</head>
+<body>
+  <main class="tracker-wrap">
+    <header class="tracker-header"><div class="eyebrow"><span></span> FITNESS TRACKER · CLIENT</div><button class="secondary" id="logout">Déconnexion</button></header>
+    <h1>Vos séances, <em>à votre rythme.</em></h1>
+    <p>Retrouvez uniquement les exercices attribués par votre professionnel et partagez votre ressenti.</p>
+    <p id="message" class="notice" role="status" aria-live="polite"></p>
+    <div id="sessions"></div>
+    <footer>Exercise data by <a href="https://repdb.co" target="_blank" rel="noopener noreferrer">RepDB (repdb.co)</a></footer>
+  </main>
+  <script type="module" src="/client.js"></script>
+</body>
+</html>

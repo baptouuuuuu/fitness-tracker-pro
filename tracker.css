@@ -1,0 +1,14 @@
+.tracker-wrap { max-width: 1050px; margin: auto; padding: 3rem 1.5rem; }
+.tracker-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.tracker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
+.tracker-form { display: grid; gap: 1rem; margin: 1rem 0; }
+.tracker-form label { display: grid; gap: .4rem; }
+.tracker-form input:not([type=checkbox]), .tracker-form select, .tracker-form textarea { width: 100%; padding: .7rem; border: 1px solid #ccc; border-radius: .4rem; font: inherit; }
+.tracker-form input[type=checkbox] { width: auto; }
+.tracker-form label:has(input[type=checkbox]) { display: flex; align-items: center; }
+.tracker-form textarea { min-height: 5rem; resize: vertical; }
+.tracker-form button { justify-self: start; }
+.tracker-link { display: inline-block; justify-self: start; text-decoration: none; }
+.tracker-exercise { border-top: 1px solid #ddd; padding-top: 1rem; }
+.tracker-image { max-width: 200px; width: 100%; }
+#message:empty { display: none; }

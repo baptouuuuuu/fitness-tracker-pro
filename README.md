@@ -1,44 +1,55 @@
-# Fitness Maker
+# Fitness Tracker Pro
 
-Une application statique pour composer et suivre des séances à son rythme.
+Application dérivée de Fitness Maker pour créer des séances et suivre leur réalisation par des clients. Le dépôt a été initialisé avec l'historique de Fitness Maker ; ce n'est pas un fork GitHub officiel.
 
 ## Utilisation
 
-- Parcourez les 708 exercices RepDB et filtrez par une ou plusieurs parties du corps (dos, abdos, fessiers, mollets, cuisses, bras, épaules et pectoraux), matériel ou favoris. Sans partie sélectionnée, elles sont toutes incluses. La recherche accepte les noms anglais, les muscles et des termes français courants comme « pompes », « tractions » ou « développé couché » ; les noms restent en anglais. Le tri par pertinence privilégie la variété et ne constitue pas un conseil médical.
-- Dans la bibliothèque et le générateur, filtrez par renforcement, étirement et/ou mobilité. Sans sélection, tous les types d'exercice sont affichés, y compris le cardio. Certains mouvements combinent étirement et mobilité.
-- Ajoutez des exercices depuis la bibliothèque, réglez les séries et les temps d'effort et de repos dans « Ma séance » avec les boutons +/− ou les champs, puis nommez et enregistrez la séance. Le bouton « Remplacer cet exercice » ouvre la bibliothèque et conserve ses réglages ; l'opération peut être annulée.
-- Dans « Générateur », créez un brouillon de 5 à 120 minutes, repos compris, avec les mêmes filtres que la bibliothèque. Sélectionnez le matériel disponible : un exercice ne correspond que si tout son matériel obligatoire est disponible. Les exercices sans matériel sont toujours inclus ; sans sélection, ils sont les seuls affichés. Par défaut, seul le tapis est sélectionné ; il est facultatif pour les exercices au sol. « Machines » regroupe les autres équipements de salle. La génération remplace le brouillon après confirmation et ouvre « Ma séance » pour le modifier ; vérifiez le matériel et adaptez la séance à votre niveau.
-- Dans une séance générée, « Remplacer automatiquement » choisit un exercice absent de la séance qui respecte les filtres utilisés lors de sa génération, en conservant les réglages. Si aucun autre exercice ne convient, la séance reste inchangée. Ces filtres sont conservés dans le brouillon, les séances enregistrées et les exports JSON.
-- Lancez le chronomètre : pause, reprise et passage à l'étape suivante sont disponibles. La synthèse vocale française dépend du navigateur et peut être désactivée. Le minuteur utilise l'heure réelle même si l'onglet est en arrière-plan ; les annonces intermédiaires ne sont pas garanties si le navigateur suspend l'onglet.
-- Pendant la séance, retrouvez les illustrations et le compteur de séries de l'exercice en cours, les exercices suivants et une barre de progression calculée sur la durée totale, repos compris. « Voir l’exercice » ouvre sa fiche sans interrompre le chronomètre. Les positions sont affichées dans l'ordre de départ puis de fin lorsqu'elles sont disponibles.
-- Dans la fiche d'exercice, les instructions sont affichées en anglais.
-- Exportez le brouillon depuis « Ma séance » ou une séance enregistrée depuis « Mes séances » au format JSON. Importez ce fichier dans « Mes séances » sur un autre appareil : une nouvelle copie est créée sans remplacer vos séances existantes. Le fichier contient le nom, les paramètres des exercices et les éventuels filtres de génération, pas les favoris ; les exercices doivent exister dans le catalogue de l'application.
-- Les séances, le brouillon, les favoris et la progression d'une séance en cours sont stockés uniquement dans le navigateur, sans synchronisation ni sauvegarde en ligne. Une séance interrompue peut être reprise depuis « Ma séance ». Effacer les données du navigateur les supprime.
-- Les séances et brouillons créés avant le changement de catalogue restent accessibles avec leurs exercices d'origine ; les anciens favoris restent stockés, mais ne figurent plus dans la bibliothèque RepDB.
-- Les anciens objectifs de répétitions restent conservés dans les séances et exports existants, mais ne sont plus affichés ni utilisés.
+1. Créez un compte professionnel, puis ouvrez le créateur pour composer et enregistrer une séance. La bibliothèque, les filtres, le générateur et les exports JSON de Fitness Maker sont conservés.
+2. Dans l'espace professionnel, créez un lien d'invitation et transmettez-le au client par un canal privé. Il est valable sept jours et ne peut être utilisé qu'une fois. Le client crée son compte depuis ce lien.
+3. Sélectionnez le client et une séance enregistrée dans ce navigateur pour l'attribuer. Les séances attribuées sont des copies : modifier la séance locale ne modifie pas une séance déjà envoyée.
+4. Le client voit ses seules séances attribuées, peut utiliser le chronomètre et enregistrer un feedback ainsi qu'un état réalisé pour chaque exercice et pour la séance. Le professionnel retrouve ces informations dans son tableau de suivi.
 
-Adaptez l'effort à vos capacités, arrêtez en cas de douleur et demandez conseil à un professionnel de santé si nécessaire.
+L'offre gratuite permet **un client et trois attributions au total**. L'abonnement actif lève ces limites. Après résiliation ou défaut de paiement, les données restent consultables ; les limites gratuites s'appliquent aux nouvelles attributions et invitations. Une invitation en attente est également soumise à la limite au moment de son utilisation.
+
+Les brouillons et séances créées dans le créateur restent dans le stockage local du navigateur du professionnel, séparés par compte ; ils ne sont ni synchronisés ni sauvegardés par le serveur. N'y inscrivez pas de données identifiantes de patients. Les attributions et feedbacks sont stockés sur le serveur. Le client ne télécharge pas le catalogue complet et ne voit que ses exercices attribués. Ses images ne sont pas chargées depuis le serveur tiers afin d'éviter de divulguer ses consultations à ce tiers.
+
+Le contenu des exercices est informatif et ne remplace pas un avis médical. Adaptez les séances et arrêtez en cas de douleur.
 
 ## Démarrage local
 
-Avec Node.js 22 ou plus récent :
+Node.js 22.13 ou supérieur avec `node:sqlite` est requis. Aucune dépendance npm n'est nécessaire.
 
 ```sh
-python3 -m http.server 8000
+npm start
 ```
 
-Ouvrir http://localhost:8000. Pour les tests : `npm test`. Aucune dépendance npm n'est nécessaire.
+Ouvrir http://localhost:3000. La base SQLite `tracker.sqlite` est créée localement. Pour les tests : `npm test`.
 
-## Publication GitHub Pages
+Variables disponibles :
 
-Après fusion sur `main`, le workflow `.github/workflows/pages.yml` exécute les tests et déploie le site via GitHub Actions. Dans **Settings → Pages**, sélectionner **GitHub Actions** comme source. Une première activation peut nécessiter les droits d'administration du dépôt.
+| Variable | Rôle |
+| --- | --- |
+| `APP_URL` | Origine publique exacte, HTTPS obligatoire hors localhost ; défaut `http://localhost:3000` |
+| `HOST`, `PORT` | Adresse et port d'écoute ; défaut `127.0.0.1:3000` |
+| `DATABASE_PATH` | Chemin du fichier SQLite ; défaut `tracker.sqlite` |
+| `STRIPE_SECRET_KEY` | Clé secrète Stripe, jamais exposée au navigateur |
+| `STRIPE_PRICE_ID` | Identifiant du tarif Stripe récurrent |
+| `STRIPE_WEBHOOK_SECRET` | Secret de signature du webhook Stripe |
 
-Le dépôt est privé : GitHub Pages pour les dépôts privés dépend de l'offre GitHub et des réglages de l'organisation. La visibilité du dépôt ne garantit pas celle du site : vérifier les paramètres et les conditions de publication avant d'activer Pages. Si Pages n'est pas disponible pour ce dépôt, adapter l'offre ou choisir un hébergement adapté.
+## Paiement
+
+Créez un produit et un tarif récurrent dans Stripe, configurez les trois variables `STRIPE_*`, puis configurez le portail client Stripe. Enregistrez l'URL `APP_URL/api/stripe/webhook` pour les événements `checkout.session.completed` et `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`. Les signatures sont vérifiées et l'état courant de l'abonnement est relu auprès de Stripe avant d'accorder ou retirer les droits. Sans configuration, les boutons de paiement renvoient une erreur explicite et aucun compte n'est marqué payant. Commencez avec les clés et moyens de paiement de test Stripe.
+
+## Limites avant utilisation réelle
+
+Ce projet est un prototype fonctionnel, **pas une plateforme validée pour des données de santé réelles**. Avant toute mise en service, il faut notamment un hébergement et des sauvegardes adaptés et chiffrés, une analyse de sécurité indépendante, une gestion de la récupération et suppression des comptes, et une analyse RGPD/HDS applicable au contexte. SQLite n'est pas chiffré par l'application ; la sauvegarde, le contrôle d'accès au fichier et la gestion du cycle de vie des données relèvent de l'hébergement. Le prototype doit être exécuté en un seul processus : la limitation des tentatives de connexion est en mémoire et par adresse de connexion, sans prise en charge des adresses transmises par un proxy. Les séances locales sont accessibles aux personnes ayant accès au profil du navigateur.
+
+Le site ne peut plus être publié comme site statique GitHub Pages : les comptes, autorisations, feedbacks et webhooks nécessitent le serveur Node et une base persistante. L'ancien workflow de publication Pages a été supprimé.
 
 ## Données et images
 
-Exercise data by [RepDB (repdb.co)](https://repdb.co). Le catalogue et les images fixes proviennent de [RepDB/exercise-dataset](https://github.com/RepDB/exercise-dataset), révision `f12da458a90f353a86c953f204304d5a8bd98275`, sous la [licence gratuite RepDB](https://github.com/RepDB/exercise-dataset/blob/f12da458a90f353a86c953f204304d5a8bd98275/LICENSE-DATA.md). Elle autorise l'utilisation dans une application avec attribution, mais interdit notamment la redistribution sous forme de jeu de données. Les illustrations sont chargées depuis GitHub et nécessitent une connexion Internet. Pour actualiser le catalogue, télécharger `exercises.json` de la révision choisie, exécuter `node generate-data.mjs chemin/vers/exercises.json` et actualiser la révision des images dans `exercises.js`.
+Exercise data by [RepDB (repdb.co)](https://repdb.co). Le catalogue et les images fixes proviennent de [RepDB/exercise-dataset](https://github.com/RepDB/exercise-dataset), révision `f12da458a90f353a86c953f204304d5a8bd98275`, sous la [licence gratuite RepDB](https://github.com/RepDB/exercise-dataset/blob/f12da458a90f353a86c953f204304d5a8bd98275/LICENSE-DATA.md). Elle autorise l'utilisation dans une application avec attribution, mais interdit notamment la redistribution sous forme de jeu de données. Le créateur professionnel charge les illustrations depuis GitHub et nécessite une connexion Internet ; ce tiers reçoit donc les requêtes d'images et l'adresse IP du navigateur.
 
-Les anciennes séances conservent leurs données issues de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) sous licence MIT ; voir [LICENSE-DATA](LICENSE-DATA). Elles ne chargent pas d'images Gym visual.
+Pour actualiser le catalogue, télécharger `exercises.json` de la révision choisie, exécuter `node generate-data.mjs chemin/vers/exercises.json` et actualiser la révision des images dans `exercises.js`.
 
-Les animations premium de RepDB ne sont pas incluses dans la licence gratuite.
+Les anciennes séances conservent leurs données issues de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) sous licence MIT ; voir [LICENSE-DATA](LICENSE-DATA). Les animations premium de RepDB ne sont pas incluses dans la licence gratuite.
