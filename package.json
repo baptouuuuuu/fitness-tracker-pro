@@ -1,1 +1,1 @@
-{"name":"fitness-maker","private":true,"type":"module","scripts":{"test":"node --test"}}
+{"name":"fitness-tracker-pro","private":true,"type":"module","engines":{"node":">=22.13"},"scripts":{"start":"node server.js","test":"node --test"}}

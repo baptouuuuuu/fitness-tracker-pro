@@ -1,6 +1,11 @@
 import { exercises, exerciseById } from './exercises.js';
 import { EQUIPMENT_FILTERS } from './equipment-audit.js';
-import { STORAGE_KEY, BODY_PART_FILTERS, matchesExercise, generateSession, automaticReplacement, validGenerationFilters, recommend, validateItem, exportSession, importSession, makeTimeline, formatTime, locatePhase } from './core.js';
+import { BODY_PART_FILTERS, matchesExercise, generateSession, automaticReplacement, validGenerationFilters, recommend, validateItem, exportSession, importSession, makeTimeline, formatTime, locatePhase } from './core.js';
+
+const accountResponse = await fetch('/api/me');
+if (!accountResponse.ok) throw new Error('Connexion requise.');
+const account = await accountResponse.json();
+const STORAGE_KEY = `fitness-tracker-professional-${account.id}`;
 
 const app = document.querySelector('#app');
 const byId = exerciseById;
@@ -130,6 +135,8 @@ function runnerModal() {
 }
 function render() {
   app.innerHTML = shell(state.page === 'library' ? library() : state.page === 'session' ? sessionPage() : state.page === 'generator' ? generatorPage() : savedPage());
+  document.querySelector('.sidebar nav').insertAdjacentHTML('beforeend', '<a class="nav-link" href="/portal.html">↗ &nbsp; Espace professionnel</a>');
+  document.querySelector('.brand div').innerHTML = 'fitness<span>tracker</span><small>ESPACE PROFESSIONNEL</small>';
 }
 function add(id) {
   if (!byId(id)) return;

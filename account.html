@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion — Fitness Tracker</title>
+  <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/tracker.css">
+</head>
+<body>
+  <main class="tracker-wrap">
+    <div class="eyebrow"><span></span> FITNESS TRACKER</div>
+    <h1>Avançons <em>ensemble.</em></h1>
+    <p>Un espace pour les professionnels et leurs clients.</p>
+    <p id="message" class="notice" role="status" aria-live="polite"></p>
+    <div class="tracker-grid">
+      <form class="panel tracker-form" id="login">
+        <h2>Se connecter</h2>
+        <label>Adresse e-mail <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <label>Mot de passe <input name="password" type="password" autocomplete="current-password" required minlength="12" maxlength="256"></label>
+        <button class="primary">Connexion</button>
+      </form>
+      <form class="panel tracker-form" id="register">
+        <h2 id="register-title">Créer un compte professionnel</h2>
+        <p id="register-description">L’offre gratuite permet de suivre un client et de lui attribuer trois séances.</p>
+        <label>Adresse e-mail <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <label>Mot de passe <input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="256"></label>
+        <button class="primary">Créer mon compte</button>
+      </form>
+    </div>
+    <footer>Exercise data by <a href="https://repdb.co" target="_blank" rel="noopener noreferrer">RepDB (repdb.co)</a></footer>
+  </main>
+  <script type="module" src="/account.js"></script>
+</body>
+</html>
